@@ -15,10 +15,17 @@ model = OpenAIServerModel(
 
 # Global state for simplicity
 DISTRIBUTION_HISTORY = {}
+
 @tool
 def check_history(penguin_name: str) -> Dict[str, Any]:
     """
     Check the recent resource distribution history for a specific penguin.
+    
+    Args:
+        penguin_name: The name of the penguin to check history for.
+        
+    Returns:
+        A dictionary containing recent_food count and has_tool boolean.
     """
     history = DISTRIBUTION_HISTORY.get(penguin_name, [])
     recent_food = sum(h["food"] for h in history[-3:]) if history else 0
@@ -29,6 +36,14 @@ def check_history(penguin_name: str) -> Dict[str, Any]:
 def record_distribution(penguin_name: str, food: int, has_tool: bool) -> str:
     """
     Record the distribution of resources.
+    
+    Args:
+        penguin_name: The name of the penguin receiving resources.
+        food: The amount of food distributed.
+        has_tool: Whether a tool was distributed.
+        
+    Returns:
+        A confirmation message string.
     """
     if penguin_name not in DISTRIBUTION_HISTORY:
         DISTRIBUTION_HISTORY[penguin_name] = []
@@ -37,24 +52,24 @@ def record_distribution(penguin_name: str, food: int, has_tool: bool) -> str:
 
 @tool
 def find_food(penguin_name: str, method: str) -> int:
-  """
-  Finds food using a specified method.
-  
-  Args:
-      penguin_name: The name of the penguin searching for food.
-      method: The method used to find food (fishing or foraging).
-  
-  Returns:
-      The amount of food found as an integer.
-  """
-  if method == "fishing":
-    food_found = random.randint(2, 7)  # More food when fishing
-    print(f"{penguin_name} went fishing and found {food_found} food.")
-    return food_found
-  else:
-    food_found = random.randint(0, 3)
-    print(f"{penguin_name} foraged and found {food_found} food.")
-    return food_found
+    """
+    Finds food using a specified method.
+    
+    Args:
+        penguin_name: The name of the penguin searching for food.
+        method: The method used to find food (fishing or foraging).
+    
+    Returns:
+        The amount of food found as an integer.
+    """
+    if method == "fishing":
+        food_found = random.randint(2, 7)  # More food when fishing
+        print(f"{penguin_name} went fishing and found {food_found} food.")
+        return food_found
+    else:
+        food_found = random.randint(0, 3)
+        print(f"{penguin_name} foraged and found {food_found} food.")
+        return food_found
 
 # The tool is added by the student
 # --- EXAMPLE TOOL (Student can change) ---
@@ -152,8 +167,9 @@ class ScientistAgent(ToolCallingAgent):
 
 class PenguinAgent(ToolCallingAgent):
     def __init__(self, name: str) -> None:
-        # YOUR CODE HERE - add a tool here, or change existing ones!
-        super().__init__(tools=["YOUR NEW TOOL HERE"], model=model, name=name)
+        # YOUR CODE HERE - add the find_food tool to the tools list!
+        # Hint: Replace the empty list [] with [find_food]
+        super().__init__(tools=[], model=model, name=name)
         self.name = name
         self.food = 0
         self.has_tool = False
@@ -180,7 +196,8 @@ class PenguinAgent(ToolCallingAgent):
 
 def run_simulation():
     scientist = ScientistAgent(initial_food_supply=20, refresh_interval=5)
-    penguins = [PenguinAgent(f"Penguin {i}") for i in range(4)]
+    # Note: Agent names must be valid Python identifiers (no spaces)
+    penguins = [PenguinAgent(f"penguin_{i}") for i in range(4)]
 
     print("\nStarting Simulation...")
     for round in range(3):
@@ -197,12 +214,12 @@ def run_simulation():
 
         # Process Penguin Actions
         for penguin in penguins:
-          if penguin_actions[penguin.name].get("action") == "request_food":
-            pass # handled by scientist
-          elif penguin_actions[penguin.name].get("action"):
-            if penguin_actions[penguin.name].get("action") == "find_food":
-              food_found = find_food(penguin.name, penguin_actions[penguin.name].get("method","foraging")) #Use the finding tool
-              penguin.food += food_found
+            if penguin_actions[penguin.name].get("action") == "request_food":
+                pass  # handled by scientist
+            elif penguin_actions[penguin.name].get("action"):
+                if penguin_actions[penguin.name].get("action") == "find_food":
+                    food_found = find_food(penguin.name, penguin_actions[penguin.name].get("method", "foraging"))
+                    penguin.food += food_found
 
         # Scientist responds to actions
         for penguin in penguins:
