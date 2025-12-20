@@ -19,12 +19,6 @@ DISTRIBUTION_HISTORY = {}
 def check_history(penguin_name: str) -> Dict[str, Any]:
     """
     Check the recent resource distribution history for a specific penguin.
-    
-    Args:
-        penguin_name (str): The name of the penguin whose history is being checked.
-        
-    Returns:
-        Dict[str, Any]: A dictionary containing the recent food distributed and whether the penguin has a tool.
     """
     history = DISTRIBUTION_HISTORY.get(penguin_name, [])
     recent_food = sum(h["food"] for h in history[-3:]) if history else 0
@@ -35,32 +29,17 @@ def check_history(penguin_name: str) -> Dict[str, Any]:
 def record_distribution(penguin_name: str, food: int, has_tool: bool) -> str:
     """
     Record the distribution of resources.
-    
-    Args:
-        penguin_name (str): The name of the penguin receiving resources.
-        food (int): The amount of food distributed.
-        has_tool (bool): Indicates whether the penguin received a tool.
-        
-    Returns:
-        str: A string description of the recorded distribution.
     """
     if penguin_name not in DISTRIBUTION_HISTORY:
         DISTRIBUTION_HISTORY[penguin_name] = []
     DISTRIBUTION_HISTORY[penguin_name].append({"food": food, "has_tool": has_tool})
     return f"Recorded: {penguin_name} got {food} food and {'a' if has_tool else 'no'} tool"
 
+# The tool is added by the student
+# --- EXAMPLE TOOL (Student can change) ---
 @tool
 def find_food(penguin_name: str, method: str) -> int:
-  """
-  Finds food using a specified method.
-  
-  Args:
-      penguin_name (str): The name of the penguin searching for food.
-      method (str): The method used to find food (fishing or foraging).
-  
-  Returns:
-      int: The amount of food found.
-  """
+  """Finds food using a specified method."""
   if method == "fishing":
     food_found = random.randint(2, 7)  # More food when fishing
     print(f"{penguin_name} went fishing and found {food_found} food.")
@@ -69,10 +48,6 @@ def find_food(penguin_name: str, method: str) -> int:
     food_found = random.randint(0, 3)
     print(f"{penguin_name} foraged and found {food_found} food.")
     return food_found
-
-# The tool is added by the student
-# --- EXAMPLE TOOL (Student can change) ---
-
 
 class ScientistAgent(ToolCallingAgent):
     def __init__(self, initial_food_supply: int = 20, refresh_interval: int = 5) -> None:
@@ -166,8 +141,8 @@ class ScientistAgent(ToolCallingAgent):
 
 class PenguinAgent(ToolCallingAgent):
     def __init__(self, name: str) -> None:
-        # YOUR CODE HERE - add the find_food tool to the tools list
-        super().__init__(tools=[], model=model, name=name)
+        # YOUR CODE HERE - add a tool here, or change existing ones!
+        super().__init__(tools=[find_food], model=model, name=name)
         self.name = name
         self.food = 0
         self.has_tool = False
@@ -194,7 +169,7 @@ class PenguinAgent(ToolCallingAgent):
 
 def run_simulation():
     scientist = ScientistAgent(initial_food_supply=20, refresh_interval=5)
-    penguins = [PenguinAgent(f"penguin_{i}") for i in range(4)]
+    penguins = [PenguinAgent(f"Penguin {i}") for i in range(4)]
 
     print("\nStarting Simulation...")
     for round in range(3):
