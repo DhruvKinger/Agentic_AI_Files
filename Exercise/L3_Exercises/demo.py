@@ -127,6 +127,8 @@ def create_diagram(title,
 
     plt.axis("off")
     plt.tight_layout()
+    plt.savefig('uluru_diagram.png', dpi=300, bbox_inches='tight')
+    print("Diagram saved as 'uluru_diagram.png'")
     plt.show()
 
 
