@@ -31,6 +31,12 @@ def create_diagram(title, nodes, edges, node_labels=None, node_types=None, edge_
     pos["Pitjantjatjara Language Specialist"] = (2*horizontal_spacing, -vertical_spacing)
     pos["Knowledge Base Lookup"] = (3*horizontal_spacing, 0)
     
+    # New node positions
+    pos["Translation Verification Agent"] = (2.5*horizontal_spacing, 0)
+    pos["Multimodal Media Tool"] = (3.5*horizontal_spacing, vertical_spacing)
+    pos["Feedback Collector"] = (-0.5*horizontal_spacing, -vertical_spacing)
+    pos["Cultural Sensitivity Checker"] = (3.5*horizontal_spacing, -vertical_spacing)
+    
     node_colors = []
     node_shapes = []
     node_sizes = []
@@ -115,7 +121,12 @@ def create_diagram(title, nodes, edges, node_labels=None, node_types=None, edge_
 
     plt.axis("off")
     plt.tight_layout()
-    plt.show()
+    
+    # Save the diagram instead of showing it
+    filename = title.replace(" ", "_").replace(":", "") + ".png"
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    print(f"Diagram saved as: {filename}")
+    plt.close()
 
 
 """ 
